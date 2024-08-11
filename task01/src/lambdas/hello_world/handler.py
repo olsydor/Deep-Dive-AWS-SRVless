@@ -12,9 +12,13 @@ class HelloWorld(AbstractLambda):
     def handle_request(self, event, context):
         """
         Основна логіка обробки запиту Lambda.
-        Повертає просто значення 200, як очікується в тесті.
+        Повертає словник з статусом і повідомленням у форматі JSON.
         """
-        return 200
+        response = {
+            "statusCode": 200,
+            "message": "Hello from Lambda"
+        }
+        return response
     
     def lambda_handler(self, event, context):
         """
