@@ -21,7 +21,21 @@
       "allow_origins": ["*"],
       "expose_headers": ["X-Requested-With"],
       "max_age": 360
-    }
+    },
+    "routing": [
+      {
+        "path": "/hello",
+        "method": "GET",
+        "statusCode": 200,
+        "message": "Hello from Lambda"
+      },
+      {
+        "path": "/{proxy+}",
+        "method": "ANY",
+        "statusCode": 400,
+        "message": "Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"
+      }
+    ]
   },
   "ephemeral_storage": 512,
   "logs_expiration": "${logs_expiration}"
