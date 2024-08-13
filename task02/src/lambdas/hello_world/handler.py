@@ -20,8 +20,8 @@ class HelloWorld(AbstractLambda):
         else:
             return {
                 "is_valid": False,
-                "path": path,
-                "method": method
+                "path": path or "None",
+                "method": method or "None"
             }
         
     def handle_request(self, event, context):
