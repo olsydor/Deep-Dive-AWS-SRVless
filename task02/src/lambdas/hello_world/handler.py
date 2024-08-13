@@ -1,3 +1,4 @@
+import json
 from commons.log_helper import get_logger
 from commons.abstract_lambda import AbstractLambda
 
@@ -33,12 +34,16 @@ class HelloWorld(AbstractLambda):
         if validation_result["is_valid"]:
             response = {
                 "statusCode": 200,
-                "message": "Hello from Lambda"
+                "body": json.dumps({
+                    "message": "Hello from Lambda"
+                })
             }
         else:
             response = {
                 "statusCode": 400,
-                "message": f"Bad request syntax or unsupported method. Request path: {validation_result['path']}. HTTP method: {validation_result['method']}"
+                "body": json.dumps({
+                    "message": f"Bad request syntax or unsupported method. Request path: {validation_result['path']}. HTTP method: {validation_result['method']}"
+                })
             }
 
         return response
