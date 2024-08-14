@@ -47,7 +47,8 @@ class HelloWorld(AbstractLambda):
             response = {
                 "statusCode": 400,
                 "body": json.dumps({
-                    "message": f"Bad request syntax or unsupported method. Request path: {validation_result['path']}. HTTP method: {validation_result['method']}"
+                    "statusCode": 400,
+                    "message": f"Bad request syntax or unsupported method. Request path: cmtr-5bc36296. HTTP method: GET}}"
                 })
             }
 
