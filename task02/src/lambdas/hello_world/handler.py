@@ -13,6 +13,9 @@ class HelloWorld(AbstractLambda):
         path = event.get('path')
         method = event.get('httpMethod')
 
+        # Логування для перевірки значень path і method
+        _LOG.debug(f"Received path: {path}, method: {method}")
+
         if path == '/hello' and method == 'GET':
             return {
                 "is_valid": True
@@ -39,6 +42,9 @@ class HelloWorld(AbstractLambda):
                 })
             }
         else:
+            # Логування помилкових запитів для полегшення відлагодження
+            _LOG.warning(f"Invalid request: {validation_result}")
+
             response = {
                 "statusCode": 400,
                 "body": json.dumps({
@@ -52,6 +58,9 @@ class HelloWorld(AbstractLambda):
         """
         Цей метод викликається безпосередньо, коли запускається Lambda-функція.
         """
+        # Логування для перевірки структури event
+        _LOG.debug(f"Incoming event: {json.dumps(event)}")
+
         return self.handle_request(event, context)
 
 HANDLER = HelloWorld()
