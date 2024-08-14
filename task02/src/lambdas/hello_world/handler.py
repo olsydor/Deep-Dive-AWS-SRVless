@@ -10,8 +10,8 @@ class HelloWorld(AbstractLambda):
         """
         Валідація запиту, перевірка, чи шлях відповідає /hello.
         """
-        path = event.get('rawPath')
-        method = event.get('requestContext', {}).get('http', {}).get('method')
+        path = event.get('rawPath', 'None')  # Змінено на 'rawPath'
+        method = event.get('requestContext', {}).get('http', {}).get('method', 'None')  # Змінено шлях отримання методу
 
         _LOG.debug(f"Received path: {path}, method: {method}")
 
@@ -29,21 +29,28 @@ class HelloWorld(AbstractLambda):
     def handle_request(self, event, context):
         """
         Основна логіка обробки запиту Lambda.
+        Повертає відповідь з кодом 200 для /hello і кодом 400 для інших шляхів.
         """
         validation_result = self.validate_request(event)
 
         if validation_result["is_valid"]:
-            return {
+            response = {
                 "statusCode": 200,
-                "message": "Hello from Lambda"
+                "body": json.dumps({
+                    "message": "Hello from Lambda"
+                })
             }
         else:
-            path = validation_result['path'] or 'Unknown'
-            method = validation_result['method'] or 'Unknown'
-            return {
+            _LOG.warning(f"Invalid request: {validation_result}")
+
+            response = {
                 "statusCode": 400,
-                "message": f"Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"
+                "body": json.dumps({
+                    "message": f"Bad request syntax or unsupported method. Request path: {validation_result['path']}. HTTP method: {validation_result['method']}"
+                })
             }
+
+        return response
     
     def lambda_handler(self, event, context):
         """
