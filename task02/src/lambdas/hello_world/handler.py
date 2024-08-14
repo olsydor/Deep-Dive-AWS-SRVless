@@ -10,10 +10,9 @@ class HelloWorld(AbstractLambda):
         """
         Валідація запиту, перевірка, чи шлях відповідає /hello.
         """
-        path = event.get('path')
-        method = event.get('httpMethod')
+        path = event.get('rawPath')
+        method = event.get('requestContext', {}).get('http', {}).get('method')
 
-        # Логування для перевірки значень path і method
         _LOG.debug(f"Received path: {path}, method: {method}")
 
         if path == '/hello' and method == 'GET':
@@ -23,42 +22,33 @@ class HelloWorld(AbstractLambda):
         else:
             return {
                 "is_valid": False,
-                "path": path or "None",
-                "method": method or "None"
+                "path": path,
+                "method": method
             }
         
     def handle_request(self, event, context):
         """
         Основна логіка обробки запиту Lambda.
-        Повертає відповідь з кодом 200 для /hello і кодом 400 для інших шляхів.
         """
         validation_result = self.validate_request(event)
 
         if validation_result["is_valid"]:
-            response = {
+            return {
                 "statusCode": 200,
-                "body": json.dumps({
-                    "message": "Hello from Lambda"
-                })
+                "message": "Hello from Lambda"
             }
         else:
-            # Логування помилкових запитів для полегшення відлагодження
-            _LOG.warning(f"Invalid request: {validation_result}")
-
-            response = {
+            path = validation_result['path'] or 'Unknown'
+            method = validation_result['method'] or 'Unknown'
+            return {
                 "statusCode": 400,
-                "body": json.dumps({
-                    "message": f"Bad request syntax or unsupported method. Request path: {validation_result['path']}. HTTP method: {validation_result['method']}"
-                })
+                "message": f"Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"
             }
-
-        return response
     
     def lambda_handler(self, event, context):
         """
         Цей метод викликається безпосередньо, коли запускається Lambda-функція.
         """
-        # Логування для перевірки структури event
         _LOG.debug(f"Incoming event: {json.dumps(event)}")
 
         return self.handle_request(event, context)
